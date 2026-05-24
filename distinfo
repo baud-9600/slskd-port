@@ -1,4 +1,6 @@
-TIMESTAMP = 1779425280
+TIMESTAMP = 1779503098
+SHA256 (slskd-0.25.1-linux-x64.zip) = a0235951009cc5376c6afc842aab6625c8bd591ac75857ae9cbf7ff82cac0292
+SIZE (slskd-0.25.1-linux-x64.zip) = 56587236
 SHA256 (asp.versioning.abstractions.8.1.0.nupkg) = cafdf3f5fc9e295088772982d6c20f28d401f8e973c7846701d5c75d26ac96dd
 SIZE (asp.versioning.abstractions.8.1.0.nupkg) = 186650
 SHA256 (asp.versioning.http.8.1.0.nupkg) = 437a1ea3f3b2ad34a17d5843b292a24defbd79fe423dd9e8f84ecb9d57c89f78

@@ -32,15 +32,19 @@ load_rc_config ${name}
 
 procname="%%PREFIX%%/share/slskd/slskd"
 command="/usr/sbin/daemon"
-pidfile="/var/run/${name}.pid"
+pidfile="/var/run/${name}/${name}.pid"
+child_pidfile="/var/run/${name}/${name}-child.pid"
 slskd_chdir="%%PREFIX%%/share/slskd"
 
-command_args="-f -P ${pidfile} -H -o ${slskd_log_file} ${procname} --app-dir=${slskd_data_dir} --config=${slskd_config} ${slskd_flags}"
+command_args="-f -p ${pidfile} -P ${child_pidfile} -H -o ${slskd_log_file} ${procname} --app-dir=${slskd_data_dir} --config=${slskd_config} ${slskd_flags}"
 
 start_precmd="slskd_precmd"
 
 slskd_precmd()
 {
+    if [ ! -d "/var/run/${name}" ]; then
+        install -d -m 0750 -o "${slskd_user}" -g "${slskd_group}" "/var/run/${name}"
+    fi
     if [ ! -d "${slskd_data_dir}" ]; then
         install -d -m 0750 -o "${slskd_user}" -g "${slskd_group}" "${slskd_data_dir}"
     fi
