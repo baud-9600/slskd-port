@@ -25,10 +25,16 @@ This repository contains the FreeBSD port for [slskd](https://github.com/slskd/s
 cat work/slskd-*/src/slskd/obj/project.assets.json | \
 	jq -r '.libraries | keys[] | select(contains("/")) | split("/") | "NUGET_DEPENDS+= \(.[0])=\(.[1])"'
 ```
-- Build with `poudriere`
+
+## Building with poudriere
+- Setup the overlay (assuming `/home/dev` is the root)
+- Test & build
 ```bash
-poudriere testport -j 14_3 -p main -O . net-p2p/slskd
-poudriere bulk -C -j 14_3 -p main -O . net-p2p/slskd
+mkdir -p /home/dev/ports/net-p2p
+ln -s /home/dev/slskd-port /home/dev/ports/net-p2p/slskd
+poudriere ports -c -p overlay -m null -M /home/dev/ports
+poudriere testport -j 14_3 -p main -O overlay net-p2p/slskd
+poudriere bulk -C -j 14_3 -p main -O overlay net-p2p/slskd
 ```
 
 ## Notes
