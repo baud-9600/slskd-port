@@ -1,4 +1,4 @@
-TIMESTAMP = 1779503098
+TIMESTAMP = 1779599415
 SHA256 (slskd-0.25.1-linux-x64.zip) = a0235951009cc5376c6afc842aab6625c8bd591ac75857ae9cbf7ff82cac0292
 SIZE (slskd-0.25.1-linux-x64.zip) = 56587236
 SHA256 (asp.versioning.abstractions.8.1.0.nupkg) = cafdf3f5fc9e295088772982d6c20f28d401f8e973c7846701d5c75d26ac96dd
@@ -191,5 +191,5 @@ SHA256 (prometheus-net.systemmetrics.3.1.0.nupkg) = f6acde600fba4eed6df0c95f932c
 SIZE (prometheus-net.systemmetrics.3.1.0.nupkg) = 65405
 SHA256 (prometheus-net.8.2.1.nupkg) = 3711de5dde1fc3073830cb13ea6adf5fcd5cce31e7ab618c4ad59369b671303c
 SIZE (prometheus-net.8.2.1.nupkg) = 424722
-SHA256 (slskd-slskd-0.25.1_GH0.tar.gz) = 65951cc6a192e89570a58e6c9d36a39bfd98275c5745d4c9976c3cc88c8b9542
-SIZE (slskd-slskd-0.25.1_GH0.tar.gz) = 598318
+SHA256 (slskd-slskd-0.25.1+g7961741-7961741_GH0.tar.gz) = cbd622854f549dc1bef98bb052ea494eeedf4a48205a5beb95e46253975816d8
+SIZE (slskd-slskd-0.25.1+g7961741-7961741_GH0.tar.gz) = 598287

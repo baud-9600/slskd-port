@@ -1,54 +1,55 @@
-PORTNAME=	slskd
+PORTNAME=		slskd
 DISTVERSION=	0.25.1
-CATEGORIES=	net-p2p
+DISTVERSIONSUFFIX=	+g${GH_TAGNAME}
+CATEGORIES=		net-p2p
 
-MAINTAINER=	squared.pusher@gmail.com
-COMMENT=	Modern client-server application for the Soulseek file sharing network
-WWW=		https://github.com/slskd/slskd
+MAINTAINER=		squared.pusher@gmail.com
+COMMENT=		Modern client-server application for the Soulseek file sharing network
+WWW=			https://github.com/slskd/slskd
 
-LICENSE=	AGPLv3
+LICENSE=		AGPLv3
 LICENSE_FILE=	${WRKSRC}/LICENSE
 
-LIB_DEPENDS=	libsqlite3.so:databases/sqlite3 \
-		libbrotlidec.so:archivers/brotli \
-		libbrotlienc.so:archivers/brotli \
-		libgssapi_krb5.so:security/krb5 \
-		libinotify.so:devel/libinotify \
-		libunwind.so:devel/libunwind \
-		libicuuc.so:devel/icu
+LIB_DEPENDS=	libbrotlidec.so:archivers/brotli \
+				libbrotlienc.so:archivers/brotli \
+				libgssapi_krb5.so:security/krb5 \
+				libinotify.so:devel/libinotify \
+				libunwind.so:devel/libunwind \
+				libicuuc.so:devel/icu
 BUILD_DEPENDS=	dotnet>=9:lang/dotnet
 
-USES=		ssl
+USES=			sqlite:3 ssl
+USE_RC_SUBR=	slskd
 
 EXTRACT_ONLY=	${DISTNAME}${EXTRACT_SUFX} \
 				slskd-${DISTVERSION}-linux-x64.zip
 
-SUB_FILES=	pkg-message
+SUB_FILES=		pkg-message
 
-USE_GITHUB=	yes
-GH_ACCOUNT=	slskd
-GH_PROJECT=	slskd
-USE_RC_SUBR=	slskd
+USE_GITHUB=		yes
+GH_ACCOUNT=		slskd
+GH_PROJECT=		slskd
+GH_TAGNAME=		7961741
 
-USERS=		slskd
-GROUPS=		slskd
-
-MASTER_SITES+=	https://github.com/slskd/slskd/releases/download/${DISTVERSION}/:webui
-DISTFILES+=	slskd-${DISTVERSION}-linux-x64.zip:webui
+USERS=			slskd
+GROUPS=			slskd
 
 DOTNET_ARCH=	${ARCH:S/amd64/x64/:S/aarch64/arm64/}
 DOTNET_OSREL=	${OSREL:R}
 
+MASTER_SITES+=	https://github.com/slskd/slskd/releases/download/${DISTVERSION}/:webui
+DISTFILES+=		slskd-${DISTVERSION}-linux-x64.zip:webui
+
 .include "Makefile.nuget"
 
 .for depend in ${NUGET_DEPENDS}
-DISTFILES+=	${depend:C/=.*$//:tl}.${depend:C/^.*=//:tl}.nupkg:nuget_${depend:C/[.+=-]//g}
 MASTER_SITES+=	https://www.nuget.org/api/v2/package/${depend:C/=.*$//:tl}/${depend:C/^.*=//:tl}/?dummy=/:nuget_${depend:C/[.+=-]//g}
+DISTFILES+=		${depend:C/=.*$//:tl}.${depend:C/^.*=//:tl}.nupkg:nuget_${depend:C/[.+=-]//g}
 .endfor
 
 post-extract:
 	@${MKDIR} ${WRKDIR}/nuget
-	${ECHO_CMD} "Setting up local NuGet cache..."
+	@${ECHO_CMD} "Setting up local NuGet cache..."
 .for depend in ${NUGET_DEPENDS}
 	@${CP} ${DISTDIR}/${depend:C/=.*$//:tl}.${depend:C/^.*=//:tl}.nupkg ${WRKDIR}/nuget/
 .endfor
@@ -56,12 +57,6 @@ post-extract:
 post-patch:
 	${REINPLACE_CMD} -e 's|<TargetFramework>net10.0</TargetFramework>|<TargetFramework>net9.0</TargetFramework>|' \
 		${WRKSRC}/src/slskd/slskd.csproj
-	@${REINPLACE_CMD} \
-		-e 's|^# web:|web:|' \
-		-e 's|^#   ip_address: 0.0.0.0,\[::\]|  ip_address: 0.0.0.0|' \
-		-e 's|^#   https:|  https:|' \
-		-e 's|^#     ip_address: 0.0.0.0,\[::\]|    ip_address: 0.0.0.0|' \
-		${WRKSRC}/config/slskd.example.yml
 
 do-build:
 	cd ${WRKSRC}/src/slskd && \
@@ -76,29 +71,22 @@ do-build:
 			-p:ReadyToRun=true \
 			-p:PublishSingleFile=true \
 			-p:IncludeNativeLibrariesForSelfExtract=true \
-			-p:Version=${DISTVERSION} \
+			-p:Version=${DISTVERSION}${DISTVERSIONSUFFIX} \
 			--self-contained \
 			--no-restore \
 			-o ${WRKDIR}/publish
 
 do-install:
 	@${MKDIR} ${STAGEDIR}${DATADIR}
-	cd ${WRKDIR}/publish && ${COPYTREE_SHARE} . ${STAGEDIR}${DATADIR}
-	@${RM} -r \
-		${STAGEDIR}${DATADIR}/slskd.pdb \
-		${STAGEDIR}${DATADIR}/etc \
-		${STAGEDIR}${DATADIR}/LICENSE \
-		${STAGEDIR}${DATADIR}/config \
-		${STAGEDIR}${DATADIR}/wwwroot
+	${INSTALL_SCRIPT} ${WRKDIR}/publish/slskd ${STAGEDIR}${DATADIR}
 	cd ${WRKDIR}/wwwroot && ${COPYTREE_SHARE} . ${STAGEDIR}${DATADIR}/wwwroot
 	@${MKDIR} ${STAGEDIR}${PREFIX}/etc
-	${INSTALL_DATA} ${WRKSRC}/config/slskd.example.yml \
+	${INSTALL_DATA} ${FILESDIR}/slskd.yml.sample \
 		${STAGEDIR}${PREFIX}/etc/slskd.yml.sample
-	@${CHMOD} +x ${STAGEDIR}${DATADIR}/slskd
 	${LN} -sf ../../lib/libsqlite3.so ${STAGEDIR}${DATADIR}/libe_sqlite3.so
 
 post-install:
-	@${ECHO_CMD} "@sample etc/slskd.yml.sample" >> ${TMPPLIST}
+	@${ECHO_CMD} "@sample etc/slskd.yml.sample" > ${TMPPLIST}
 	@${ECHO_CMD} "${DATADIR_REL}/libe_sqlite3.so" >> ${TMPPLIST}
 	@cd ${STAGEDIR}${DATADIR} && ${FIND} . -type f | ${SED} 's|^.|${DATADIR_REL}|' | ${SORT} >> ${TMPPLIST}
 	@cd ${STAGEDIR}${DATADIR} && ${FIND} * -type d | ${SED} 's|^|@dir ${DATADIR_REL}/|' | ${SORT} >> ${TMPPLIST}

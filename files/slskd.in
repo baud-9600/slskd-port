@@ -6,13 +6,12 @@
 #
 # Add the following lines to /etc/rc.conf to enable this service:
 #
-# slskd_enable:      Set to NO by default. Set it to YES to enable it.
-# slskd_user:        The user account slskd runs as. Default: 'slskd'
-# slskd_group:       The group associated with the slskd user. Default: 'slskd'
-# slskd_data_dir:    Directory where slskd data is stored. Default: /var/db/slskd
-# slskd_config:      Path to slskd config file. Default: %%PREFIX%%/etc/slskd.yml
-# slskd_log_file:    Path to slskd log file. Default: /var/log/slskd.log
-# slskd_flags:       Arguments that will be passed to slskd.
+# slskd_enable:      Set to YES to enable slskd.
+# slskd_user:        The user account slskd runs as.
+# slskd_group:       The group associated with the slskd user.
+# slskd_data_dir:    Directory where slskd data is stored.
+# slskd_config:      Path to slskd config file.
+# slskd_flags:       Additional flags that to pass to slskd.
 #
 
 . /etc/rc.subr
@@ -27,7 +26,6 @@ load_rc_config ${name}
 : ${slskd_group:="slskd"}
 : ${slskd_data_dir:="/var/db/slskd"}
 : ${slskd_config:="%%PREFIX%%/etc/slskd.yml"}
-: ${slskd_log_file:="/var/log/slskd.log"}
 : ${slskd_flags:=""}
 
 procname="%%PREFIX%%/share/slskd/slskd"
@@ -36,7 +34,7 @@ pidfile="/var/run/${name}/${name}.pid"
 child_pidfile="/var/run/${name}/${name}-child.pid"
 slskd_chdir="%%PREFIX%%/share/slskd"
 
-command_args="-f -p ${pidfile} -P ${child_pidfile} -H -o ${slskd_log_file} ${procname} --app-dir=${slskd_data_dir} --config=${slskd_config} ${slskd_flags}"
+command_args="-f -p ${pidfile} -P ${child_pidfile} -H ${procname} --app-dir=${slskd_data_dir} --config=${slskd_config} ${slskd_flags}"
 
 start_precmd="slskd_precmd"
 
@@ -47,9 +45,6 @@ slskd_precmd()
     fi
     if [ ! -d "${slskd_data_dir}" ]; then
         install -d -m 0750 -o "${slskd_user}" -g "${slskd_group}" "${slskd_data_dir}"
-    fi
-    if [ ! -f "${slskd_log_file}" ]; then
-        install -m 0640 -o "${slskd_user}" -g "${slskd_group}" /dev/null "${slskd_log_file}"
     fi
 }
 

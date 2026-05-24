@@ -1,36 +1,33 @@
 [
 { type: install
   message: <<EOM
-~ slskd has been successfully installed ~
-
-To enable and start the service, run:
+To enable and start slskd service:
   sysrc slskd_enable="YES"
   service slskd start
 
-CONFIGURATION:
-The default configuration file is located at:
+Default config file:
   %%PREFIX%%/etc/slskd.yml
 
-You can edit this file to configure:
-  - Soulseek server & credentials.
-  - WebUI credentials (default: user 'slskd', password 'slskd').
+Edit this file to set up:
+  - Soulseek and webui auth (webui default is "slskd").
   - Paths to shares and downloads.
+  - Other features.
 
-slskd stores data in /var/db/slskd by default. If you don't
-set a download directory, this is where they will go. It is
-highly recommended to change the paths in your configs.
-
-Configuration documentation:
+Documentation:
   https://github.com/slskd/slskd/blob/master/docs/config.md
+
+Logs are found here by default:
+  /var/db/slskd/slskd.log
+  /var/db/slskd/logs
+
+Note: Not changing the download directory before starting the
+service will result in downloads being writen to /var/db/slskd
 EOM
 },
 { type: remove
   message: <<EOM
-slskd has been removed
-
-Note: The 'slskd' user/group and any application
-data in /var/db/slskd remain untouched and will require
-manual removal.
+Note: Any application data in /var/db/slskd remains
+untouched and requires manual removal.
 EOM
 }
 ]
