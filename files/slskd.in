@@ -1,0 +1,52 @@
+#!/bin/sh
+
+# PROVIDE: slskd
+# REQUIRE: DAEMON NETWORKING
+# KEYWORD: shutdown
+#
+# Add the following lines to /etc/rc.conf to enable this service:
+#
+# slskd_enable:      Set to NO by default. Set it to YES to enable it.
+# slskd_user:        The user account slskd runs as. Default: 'slskd'
+# slskd_group:       The group associated with the slskd user. Default: 'slskd'
+# slskd_data_dir:    Directory where slskd data is stored. Default: /var/db/slskd
+# slskd_config:      Path to slskd config file. Default: %%PREFIX%%/etc/slskd.yml
+# slskd_log_file:    Path to slskd log file. Default: /var/log/slskd.log
+# slskd_flags:       Arguments that will be passed to slskd.
+#
+
+. /etc/rc.subr
+
+name="slskd"
+rcvar="slskd_enable"
+
+load_rc_config ${name}
+
+: ${slskd_enable:="NO"}
+: ${slskd_user:="slskd"}
+: ${slskd_group:="slskd"}
+: ${slskd_data_dir:="/var/db/slskd"}
+: ${slskd_config:="%%PREFIX%%/etc/slskd.yml"}
+: ${slskd_log_file:="/var/log/slskd.log"}
+: ${slskd_flags:=""}
+
+procname="%%PREFIX%%/share/slskd/slskd"
+command="/usr/sbin/daemon"
+pidfile="/var/run/${name}.pid"
+slskd_chdir="%%PREFIX%%/share/slskd"
+
+command_args="-f -P ${pidfile} -H -o ${slskd_log_file} ${procname} --app-dir=${slskd_data_dir} --config=${slskd_config} ${slskd_flags}"
+
+start_precmd="slskd_precmd"
+
+slskd_precmd()
+{
+    if [ ! -d "${slskd_data_dir}" ]; then
+        install -d -m 0750 -o "${slskd_user}" -g "${slskd_group}" "${slskd_data_dir}"
+    fi
+    if [ ! -f "${slskd_log_file}" ]; then
+        install -m 0640 -o "${slskd_user}" -g "${slskd_group}" /dev/null "${slskd_log_file}"
+    fi
+}
+
+run_rc_command "$1"

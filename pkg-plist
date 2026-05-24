@@ -1,0 +1,4 @@
+@sample etc/slskd.yml.sample
+share/slskd/slskd
+share/slskd/libe_sqlite3.so
+share/slskd/slskd.staticwebassets.endpoints.json
