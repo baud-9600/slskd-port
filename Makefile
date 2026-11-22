@@ -1,6 +1,5 @@
 PORTNAME=		slskd
-DISTVERSION=	0.25.1
-DISTVERSIONSUFFIX=	+g${GH_TAGNAME}
+DISTVERSION=	0.26.2
 CATEGORIES=		net-p2p
 
 MAINTAINER=		squared.pusher@gmail.com
@@ -16,7 +15,7 @@ LIB_DEPENDS=	libbrotlidec.so:archivers/brotli \
 				libinotify.so:devel/libinotify \
 				libunwind.so:devel/libunwind \
 				libicuuc.so:devel/icu
-BUILD_DEPENDS=	dotnet>=9:lang/dotnet
+BUILD_DEPENDS=	dotnet>=10:lang/dotnet
 
 USES=			sqlite:3 ssl
 USE_RC_SUBR=	slskd
@@ -29,7 +28,7 @@ SUB_FILES=		pkg-message
 USE_GITHUB=		yes
 GH_ACCOUNT=		slskd
 GH_PROJECT=		slskd
-GH_TAGNAME=		7961741
+GH_TAGNAME=		0.26.2
 
 USERS=			slskd
 GROUPS=			slskd
@@ -54,10 +53,6 @@ post-extract:
 	@${CP} ${DISTDIR}/${depend:C/=.*$//:tl}.${depend:C/^.*=//:tl}.nupkg ${WRKDIR}/nuget/
 .endfor
 
-post-patch:
-	${REINPLACE_CMD} -e 's|<TargetFramework>net10.0</TargetFramework>|<TargetFramework>net9.0</TargetFramework>|' \
-		${WRKSRC}/src/slskd/slskd.csproj
-
 do-build:
 	cd ${WRKSRC}/src/slskd && \
 		${SETENV} ${MAKE_ENV} dotnet restore slskd.csproj \
@@ -67,11 +62,11 @@ do-build:
 		${SETENV} ${MAKE_ENV} dotnet publish slskd.csproj \
 			-c Release \
 			--runtime freebsd.${DOTNET_OSREL}-${DOTNET_ARCH} \
-			--framework net9.0 \
-			-p:ReadyToRun=true \
+			--framework net10.0 \
+			-p:ReadyToRun=false \
 			-p:PublishSingleFile=true \
 			-p:IncludeNativeLibrariesForSelfExtract=true \
-			-p:Version=${DISTVERSION}${DISTVERSIONSUFFIX} \
+			-p:Version=${DISTVERSION} \
 			--self-contained \
 			--no-restore \
 			-o ${WRKDIR}/publish

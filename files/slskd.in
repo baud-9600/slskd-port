@@ -34,7 +34,7 @@ pidfile="/var/run/${name}/${name}.pid"
 child_pidfile="/var/run/${name}/${name}-child.pid"
 slskd_chdir="%%PREFIX%%/share/slskd"
 
-command_args="-f -p ${pidfile} -P ${child_pidfile} -H ${procname} --app-dir=${slskd_data_dir} --config=${slskd_config} ${slskd_flags}"
+command_args="-o ${slskd_data_dir}/slskd-daemon.log -p ${pidfile} -P ${child_pidfile} ${procname} --app-dir=${slskd_data_dir} --config=${slskd_config} ${slskd_flags}"
 
 start_precmd="slskd_precmd"
 
