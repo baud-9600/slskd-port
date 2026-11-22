@@ -1,5 +1,6 @@
 PORTNAME=		slskd
 DISTVERSION=	0.26.2
+PORTREVISION=	1
 CATEGORIES=		net-p2p
 
 MAINTAINER=		squared.pusher@gmail.com
